@@ -1,0 +1,12 @@
+extends layout
+  
+block content
+  h1 Profile Page
+  if (user)
+    p You are currently logged in as #{user.username}
+    a(href="/users/logout") Logout
+    br
+    br
+    div
+      p username: #{user.username}
+      p id: #{user._id}

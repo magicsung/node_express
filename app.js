@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 // user authentication
 var mongoose = require('mongoose');
 var passport = require('passport');
+var flash    = require('connect-flash');
 var LocalStrategy = require('passport-local').Strategy;
 
 var routes = require('./routes/index');
@@ -33,6 +34,7 @@ app.use(require('express-session')({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);

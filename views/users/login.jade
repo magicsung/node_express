@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  .container
+  .container    
     h1 Login Page
     p.lead Say something worthwhile here.
     br
@@ -10,7 +10,8 @@ block content
           input.form-control(type='text', name="username", placeholder='Enter Username')
       .form-group
         input.form-control(type='password', name="password", placeholder='Password')
-      button.btn.btn-primary(type='submit') Submit
-      &nbsp;
       a(href='/')
         button.btn.btn-default(type="button") Cancel
+      =" "
+      button.btn.btn-primary(type='submit') Submit
+        

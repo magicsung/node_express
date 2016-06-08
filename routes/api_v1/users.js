@@ -1,51 +1,77 @@
-var express = require('express');
-var router = express.Router();
-var bodyParser = require('body-parser');
+const express = require('express');
+const app = express();
+const router = express.Router();
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
+const Account = require('../../models/account');
+const config = require('../../config/index');
 
-var Passport = require( 'passport' );
-var LocalStrategy = require( 'passport-local' ).Strategy;
+const requireAuth = passport.authenticate('jwt', {session: false});
 
-var users = {
-  zack: {
-    username: 'zack',
-    password: '1234',
-    id: 1,
-  },
-  node: {
-    username: 'node',
-    password: '5678',
-    id: 2,
-  },
-}
+app.use(passport.initialize());
 
-var localStrategy = new LocalStrategy({
-    usernameField: 'username',
-    passwordField: 'password',
-  },
-  function(username, password, done) {
-    user = users[ username ];
+require('../../config/passport')(passport);
 
-    if ( user == null ) {
-      return done( null, false, { message: 'Invalid user' } );
-    };
+router.post('/register', function(req, res) {
+  if (!req.body.email || !req.body.password) {
+    res.status(400).json({success: false, message: 'Please enter email and password.'});
+  } else {
+    var newUser = new Account({email: req.body.email, password: req.body.password});
 
-    if ( user.password !== password ) {
-      return done( null, false, { message: 'Invalid password' } );
-    };
-
-    done( null, user );
+    newUser.save(function(err) {
+      if (err) {
+        return res.status(400).json({success: false, message: 'That email address already exists.'});
+      }
+      res.status(201).json({success: true, message: 'Successfully created new user.'});
+    });
   }
-)
+});
 
-Passport.use( 'local', localStrategy );
+router.post('/login', function(req, res) {
+  Account.findOne({
+    email: req.body.email
+  }, function(err, user) {
+    if (err)
+      throw err;
 
-router.post('/login', Passport.authenticate( 'local', { session: false } ), function( req, res ) {
-  res.send(
-    {
-      'message': 'success',
-      'userID': req.user.id
+    if (!user) {
+      res.status(401).send({success: false, message: 'Authentication failed. User not found.'});
+    } else {
+      // Check if password matches
+      user.comparePassword(req.body.password, function(err, isMatch) {
+        if (isMatch && !err) {
+          // Create token if the password matched and no error was thrown
+          var token = jwt.sign({
+            id: user._id
+          }, config.secret, {expiresIn: '1 day'});
+          res.status(200).json({
+            success: true,
+            token: 'JWT ' + token
+          });
+        } else {
+          res.status(401).send({success: false, message: 'Authentication failed. Passwords did not match.'});
+        }
+      });
     }
-  );
+  });
+});
+
+router.get('/refresh_token', requireAuth, function(req, res) {
+  var token = jwt.sign({
+    id: req.user._id
+  }, config.secret, {expiresIn: '1 day'});
+  res.status(201).json({
+    success: true,
+    newToken: 'JWT ' + token
+  });
+});
+
+router.get('/dashboard', requireAuth, function(req, res) {
+  res.status(200).json({'user_id': req.user._id, 'email': req.user.email});
+});
+
+router.get('/ping', function(req, res) {
+  res.status(200).send("pong!");
 });
 
 module.exports = router;

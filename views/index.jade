@@ -1,18 +1,6 @@
 extends layout
 
 block content
-  if (!user)
-    a(href="/users/login") Login
-    br
-    a(href="/users/register") Register
-  if (user)
-    p You are currently logged in as
-      =" "
-      a(href="/users/profile") #{user.username}
-    a(href="/users/logout") Logout
     
   h1= title
-  if (user)
-    p Welcome #{user.username}
-  else
-    p Welcome express!
+  p Welcome express!

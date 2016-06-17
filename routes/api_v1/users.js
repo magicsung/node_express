@@ -16,7 +16,7 @@ router.post('/register', function(req, res) {
   if (!req.body.email || !req.body.password) {
     res.status(400).json({success: false, message: 'Please enter email and password.'});
   } else {
-    var newUser = new Account({email: req.body.email, password: req.body.password});
+    var newUser = new Account({email: req.body.email, password: req.body.password, username: req.body.username});
 
     newUser.save(function(err) {
       if (err) {
@@ -43,10 +43,12 @@ router.post('/login', function(req, res) {
           // Create token if the password matched and no error was thrown
           var token = jwt.sign({
             id: user._id
-          }, config.secret, {expiresIn: '1 day'});
+          }, config.secret, {expiresIn: '3 day'});
           res.status(200).json({
             success: true,
-            token: 'JWT ' + token
+            token: 'JWT ' + token,
+            email: user.email,
+            username: user.username
           });
         } else {
           res.status(401).send({success: false, message: 'Authentication failed. Passwords did not match.'});

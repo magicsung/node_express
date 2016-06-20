@@ -17,6 +17,10 @@ var Account = new Schema({
     type: String,
     required: true
   },
+  avatar: {
+    type: String,
+    default: 'http://dummyimage.com/100x100/cccccc/fff&text=avatar'
+  },
   role: {
     type: String,
     enum: [

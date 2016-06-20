@@ -15,6 +15,7 @@ const passport = require('passport');
 
 const routes = require('./routes/index');
 const api_v1_users = require('./routes/api_v1/users');
+const api_v1_posts = require('./routes/api_v1/posts');
 
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', "*");
@@ -37,6 +38,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/api_v1/users', api_v1_users);
+app.use('/api_v1/posts', api_v1_posts);
 
 // mongoose
 mongoose.connect(config.database);

@@ -48,7 +48,8 @@ router.post('/login', function(req, res) {
             success: true,
             token: 'JWT ' + token,
             email: user.email,
-            username: user.username
+            username: user.username,
+            avatar: user.avatar
           });
         } else {
           res.status(401).send({success: false, message: 'Authentication failed. Passwords did not match.'});

@@ -1,3 +1,5 @@
+'use strict';
+
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Account = require('./account');
@@ -16,7 +18,7 @@ var Post = new Schema({
     required: true
   },
   owner: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.ObjectId,
     ref: 'Account',
     required: true
   },
@@ -31,7 +33,41 @@ var Post = new Schema({
   created: {
     type: Date,
     default: Date.now
-  }
+  },
+  commentList: [{
+    description: { type : String, required: true },
+    owner: { type : Schema.ObjectId, ref : 'Account' },
+    createdAt: { type : Date, default : Date.now }
+  }]
 });
+
+Post.methods = {
+  addComment: function (user, comment) {
+    this.commentList.push({
+      description: comment,
+      owner: user._id
+    });
+
+    return this.save();
+  },
+  removeComment: function (commentId) {
+    const index = this.commentList
+      .map(comment => comment.id)
+      .indexOf(commentId);
+
+    if (~index) this.commentList.splice(index, 1);
+    else throw new Error('Comment not found');
+    return this.save();
+  }
+};
+
+Post.statics = {
+  load: function (_id) {
+    return this.findOne({ _id })
+      .populate('owner', 'id username avatar')
+      .populate('commentList.owner', 'id username avatar')
+      .exec();
+  }
+};
 
 module.exports = mongoose.model('Post', Post);

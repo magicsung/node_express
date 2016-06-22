@@ -37,7 +37,7 @@ var Post = new Schema({
   commentList: [{
     description: { type : String, required: true },
     owner: { type : Schema.ObjectId, ref : 'Account' },
-    createdAt: { type : Date, default : Date.now }
+    created: { type : Date, default : Date.now }
   }]
 });
 

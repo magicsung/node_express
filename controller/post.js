@@ -28,8 +28,9 @@ exports.index = function(req, res) {
           function(comment) {
             commentList.push({
               id: comment.id,
-              descrtipion: comment.description,
-              owner: comment.owner
+              description: comment.description,
+              owner: comment.owner,
+              created_at: comment.created,
             });
           }
         )

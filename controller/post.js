@@ -29,8 +29,8 @@ exports.index = function(req, res) {
             commentList.push({
               id: comment.id,
               description: comment.description,
-              owner: comment.owner,
               created_at: comment.created,
+              owner: comment.owner
             });
           }
         )
@@ -47,10 +47,12 @@ exports.index = function(req, res) {
         });
       }
     )
-    res.status(200).json({
-      success: true,
-      posts: postList
-    });
+    // setInterval(function() {
+      res.status(200).json({
+        success: true,
+        posts: postList
+      });
+    // },2000);
   });
 };
 

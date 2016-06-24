@@ -19,7 +19,21 @@ exports.create = function(req, res) {
         res.status(401).send({success: false, message: 'Post not found.'});
       } else {
         post.addComment(req.user, req.body.description);
-        res.status(201).json({success: true, message: 'Successfully add new comment.'});
+        var newComment = post.commentList[ post.commentList.length - 1 ];
+        res.status(201).json({
+          success: true,
+          message: "Successfully add new comment.",
+          comment: {
+            id: newComment.id,
+            description: newComment.description,
+            created_at: newComment.created,
+            owner: {
+              _id: req.user.id,
+              username: req.user.username,
+              avatar: req.user.avatar
+            }
+          }
+        });
       }
     })
   }

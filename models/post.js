@@ -47,6 +47,7 @@ Post.methods = {
       description: comment,
       owner: user._id
     });
+    this.comments += 1;
 
     return this.save();
   },
@@ -55,7 +56,10 @@ Post.methods = {
       .map(comment => comment.id)
       .indexOf(commentId);
 
-    if (~index) this.commentList.splice(index, 1);
+    if (~index) {
+      this.commentList.splice(index, 1);
+      this.comments -= 1;
+    }
     else throw new Error('Comment not found');
     return this.save();
   }

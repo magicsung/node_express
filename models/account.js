@@ -23,6 +23,9 @@ var Account = new Schema({
     type: String,
     default: 'http://dummyimage.com/100x100/cccccc/fff&text=avatar'
   },
+  avatarUpload: {
+    type: String
+  },
   role: {
     type: String,
     enum: [
@@ -33,6 +36,10 @@ var Account = new Schema({
   created: {
     type: Date,
     default: Date.now
+  },
+  profile: {
+    description: { type: String, default: ''},
+    mobile: { type: String, default: ''}
   }
 });
 
@@ -57,14 +64,39 @@ Account.pre('save', function(next) {
   }
 });
 
+Account.pre('findOneAndUpdate', function(next) {
+  var user = this;
+  if (user._update.password) {
+    bcrypt.genSalt(10, function(err, salt) {
+      if (err) {
+        return next(err);
+      }
+      bcrypt.hash(user._update.password, salt, function(err, hash) {
+        if (err) {
+          return next(err);
+        }
+        user._update.password = hash;
+        next();
+      });
+    });
+  } else {
+    delete user._update.password
+    return next();
+  }
+});
+
 // Create method to compare password input to password saved in database
-Account.methods.comparePassword = function(pw, cb) {
-  bcrypt.compare(pw, this.password, function(err, isMatch) {
-    if (err) {
-      return cb(err);
-    }
-    cb(null, isMatch);
-  });
+Account.methods = {
+
+  comparePassword: function(pw, cb) {
+    bcrypt.compare(pw, this.password, function(err, isMatch) {
+      if (err) {
+        return cb(err);
+      }
+      cb(null, isMatch);
+    });
+  },
+
 };
 
 module.exports = mongoose.model('Account', Account);

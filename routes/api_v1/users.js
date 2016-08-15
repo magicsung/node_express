@@ -14,7 +14,7 @@ require('../../config/passport')(passport);
 
 router.post('/register', users.register);
 router.post('/login', users.login);
-router.get('/refresh_token', requireAuth, users.refreshToken);
+router.post('/refresh_token', requireAuth, users.refreshToken);
 router.get('/profile', requireAuth, users.profile);
 router.put('/profile', requireAuth, users.updateProfile);
 router.get('/ping', function(req, res) {

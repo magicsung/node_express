@@ -59,10 +59,13 @@ exports.login = function(req, res) {
 exports.refreshToken = function(req, res) {
   var token = jwt.sign({
     id: req.user._id
-  }, config.secret, {expiresIn: '1 day'});
+  }, config.secret, {expiresIn: '3 day'});
   res.status(201).json({
     success: true,
-    newToken: 'JWT ' + token
+    token: 'JWT ' + token,
+    email: req.user.email,
+    username: req.user.username,
+    avatar: req.user.avatar
   });
 };
 
